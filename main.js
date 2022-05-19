@@ -98,10 +98,10 @@ function moverAliens() {
   for (var i = 0; i < aliensRestantes.length; i++) {
     if (!aliensRestantes[i].foiAtingido) {
       c.fillRect(
-        alienX + aliensRestantes[i].posX - 1,
-        alienY + aliensRestantes[i].posY - 1,
-        20,
-        25
+        alienX + aliensRestantes[i].posX,
+        alienY + aliensRestantes[i].posY,
+        30,
+        30
       );
       c.drawImage(
         alien,
@@ -125,7 +125,7 @@ function alienAtingido() {
       impactoLaserX <= alienX + aliensRestantes[i].posX + 18
     ) {
       if (!aliensRestantes[i].foiAtingido) {
-        c.fillStyle = "2c2c2c";
+        c.fillStyle = "#2c2c2c";
         c.fillRect(
           alienX + aliensRestantes[i].posX - 1,
           alienY + aliensRestantes[i].posY - 1,
@@ -154,7 +154,7 @@ function fimDeJogo() {
   c.fillRect(0, 0, C_LARGURA, C_ALTURA);
 
   c.textAlign = "center";
-  c.font = "40px Monaco,monospace";
+  c.font = "50px Monaco,monospace";
   c.fillStyle = "#EEEE";
   c.fillText("Fim de Jogo", C_LARGURA / 2, C_ALTURA / 2);
 
@@ -166,7 +166,7 @@ function moverCanhao(tecla) {
 
   if (codigo == TECLA_DIREITA && canhaoX <= 360) {
     c.fillStyle = "#2c2c2c";
-    c.fillRect(canhaoX, 537, 31, 19);
+    c.fillRect(canhaoX, 530, 30, 30);
     canhaoX += 8;
     laserX += 8;
     c.drawImage(canhao, canhaoX, canhaoY);
@@ -174,7 +174,7 @@ function moverCanhao(tecla) {
 
   if (codigo == TECLA_ESQUERDA && canhaoX >= 9) {
     c.fillStyle = "#2c2c2c";
-    c.fillRect(canhaoX, 537, 31, 19);
+    c.fillRect(canhaoX, 530, 30, 30);
     canhaoX -= 8;
     laserX -= 8;
     c.drawImage(canhao, canhaoX, canhaoY);
@@ -184,7 +184,7 @@ function moverCanhao(tecla) {
     inicioLaser = true;
     c.drawImage(laser, laserX, laserY);
     impactoLaserX = laserX;
-    laserMovendo = setInterval("dispararLaser()", 5);
+    laserMovendo = setInterval("dispararLaser()", 8);
   }
 }
 
@@ -202,6 +202,6 @@ function dispararLaser() {
   if (laserY < 60) {
     clearInterval(laserMovendo);
     inicioLaser = false;
-    laserY = 520;
+    laserY = 500;
   }
 }
