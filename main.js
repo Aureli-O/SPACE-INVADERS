@@ -4,25 +4,29 @@ var c;
 var canhao;
 var laser;
 var alien;
+var barreira;
 
 var canhaoX = 180;
-var canhaoY = 529;
-var laserX = 193;
+var canhaoY = 530;
+var laserX = 195;
 var laserY = 520;
 var alienX = 0;
-var alienY = 0;
+var alienY = 25;
 var inicioLaser = false;
 var impactoLaserX;
 var laserMovendo;
-var intervalo = 10;
+var intervalo = 30;
 var posicao = 0;
 
-var alienLinhas = [10, 38, 66, 94, 122, 150, 178, 206, 234, 262, 290];
+var alienLinhas = [10, 40, 70, 100, 130, 160, 190, 220, 250, 280, 310];
 var alienColunas = [55, 85, 115, 145, 175];
 var aliensRestantes = [];
 
-const C_ALTURA = 600;
-const C_LARGURA = 400;
+var barreirasPosicaoX = [125, 250, 375];
+var barreirasPosicaoY = [480];
+
+const C_ALTURA = 700;
+const C_LARGURA = 500;
 
 const TECLA_ESQUERDA = 37;
 const TECLA_DIREITA = 39;
@@ -43,6 +47,7 @@ function iniciar() {
 
   posicionarAlien();
   carregarImagens();
+  posicionarBarreiras();
 
   setInterval("moverAliens()", intervalo);
   setInterval("alienAtingido()", 6);
@@ -62,6 +67,13 @@ function posicionarAlien() {
   }
 }
 
+function posicionarBarreiras() {
+  c.fillRect(125, 480, 40, 40);
+  c.drawImage(barreira, 125, 480);
+  c.drawImage(barreira, 250, 480);
+  c.drawImage(barreira, 375, 480);
+}
+
 function carregarImagens() {
   canhao = new Image();
   canhao.src = "sprites/canhao.png";
@@ -74,6 +86,9 @@ function carregarImagens() {
 
   alien = new Image();
   alien.src = "sprites/alien.png";
+
+  barreira = new Image();
+  barreira.src = "sprites/barreira.png";
 }
 
 function moverAliens() {
@@ -109,7 +124,7 @@ function moverAliens() {
         alienY + aliensRestantes[i].posY
       );
 
-      if (aliensRestantes[i].posY + alienY + 23 >= 530) {
+      if (aliensRestantes[i].posY + alienY + 30 >= 450) {
         fimDeJogo();
       }
     }
