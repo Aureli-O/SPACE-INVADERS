@@ -5,13 +5,14 @@ var canhao;
 var laser;
 var alien;
 var barreira;
+var pontos=0;
 
 var canhaoX = 180;
-var canhaoY = 530;
-var laserX = 195;
+var canhaoY = 529;
+var laserX = 193;
 var laserY = 520;
 var alienX = 0;
-var alienY = 25;
+var alienY = 0;
 var inicioLaser = false;
 var impactoLaserX;
 var laserMovendo;
@@ -22,9 +23,6 @@ var alienLinhas = [10, 40, 70, 100, 130, 160, 190, 220, 250, 280, 310];
 var alienColunas = [55, 85, 115, 145, 175];
 var aliensRestantes = [];
 
-var barreirasPosicaoX = [125, 250, 375];
-var barreirasPosicaoY = [480];
-
 const C_ALTURA = 700;
 const C_LARGURA = 500;
 
@@ -32,12 +30,16 @@ const TECLA_ESQUERDA = 37;
 const TECLA_DIREITA = 39;
 const TECLA_ACIMA = 38;
 
+//sons
+const shoot = new Audio(`Sounds/shoot.mp3`)
+const backmusic = new Audio(`Sounds/backmusic.mp3`)
+const alienexplosion = new Audio(`Sounds/alienexplosion.mp3`)
+
 onkeydown = moverCanhao; // Define função chamada ao se pressionar uma tecla
 
 iniciar(); // Chama função inicial do jogo
 
 // Sub-rotinas (funções)
-
 function iniciar() {
   tela = document.getElementById("tela");
   c = tela.getContext("2d");
@@ -45,9 +47,13 @@ function iniciar() {
   c.fillStyle = "#2c2c2c";
   c.fillRect(0, 0, C_LARGURA, C_ALTURA);
 
-  posicionarAlien();
   carregarImagens();
+  posicionarAlien();
   posicionarBarreiras();
+
+  backmusic.play();
+  backmusic.loop =true;
+  backmusic.volume = 0.2
 
   setInterval("moverAliens()", intervalo);
   setInterval("alienAtingido()", 6);
@@ -61,17 +67,9 @@ function posicionarAlien() {
         posY: alienColunas[j],
         foiAtingido: false,
       };
-
       aliensRestantes[aliensRestantes.length] = novoAlien;
     }
   }
-}
-
-function posicionarBarreiras() {
-  c.fillRect(125, 480, 40, 40);
-  c.drawImage(barreira, 125, 480);
-  c.drawImage(barreira, 250, 480);
-  c.drawImage(barreira, 375, 480);
 }
 
 function carregarImagens() {
@@ -89,6 +87,16 @@ function carregarImagens() {
 
   barreira = new Image();
   barreira.src = "sprites/barreira.png";
+  barreira.onload = function () {
+    posicionarBarreiras();
+  };
+}
+
+function posicionarBarreiras() {
+  c.fillRect(125, 480, 40, 40);
+  c.drawImage(barreira, 125, 480);
+  c.drawImage(barreira, 250, 480);
+  c.drawImage(barreira, 375, 480);
 }
 
 function moverAliens() {
@@ -124,7 +132,7 @@ function moverAliens() {
         alienY + aliensRestantes[i].posY
       );
 
-      if (aliensRestantes[i].posY + alienY + 30 >= 450) {
+      if (aliensRestantes[i].posY + alienY + 23 >= 450) {
         fimDeJogo();
       }
     }
@@ -144,12 +152,24 @@ function alienAtingido() {
         c.fillRect(
           alienX + aliensRestantes[i].posX - 1,
           alienY + aliensRestantes[i].posY - 1,
-          20,
-          25
+          30,
+          30
         );
         aliensRestantes[i].foiAtingido = true;
         c.fillRect(impactoLaserX, laserY, 6, 19);
         laserY = 0;
+
+        setInterval("moverAliens()", 400);
+
+        if (i > 32) {
+          pontos += 10;
+        } else if (i > 10) {
+          pontos += 20;
+        } else {
+          pontos += 40;
+        }
+
+        alienexplosion.play()
       }
     }
   }
@@ -157,7 +177,7 @@ function alienAtingido() {
 
 function fimDeJogo() {
   canhaoX = 180;
-  laserX = 193;
+  laserX = 195;
   laserY = 520;
   alienX = 0;
   alienY = 0;
@@ -172,8 +192,9 @@ function fimDeJogo() {
   c.font = "50px Monaco,monospace";
   c.fillStyle = "#EEEE";
   c.fillText("Fim de Jogo", C_LARGURA / 2, C_ALTURA / 2);
-
   onkeydown = null;
+
+  updateLocalStorage();
 }
 
 function moverCanhao(tecla) {
@@ -199,7 +220,7 @@ function moverCanhao(tecla) {
     inicioLaser = true;
     c.drawImage(laser, laserX, laserY);
     impactoLaserX = laserX;
-    laserMovendo = setInterval("dispararLaser()", 8);
+    laserMovendo = setInterval("dispararLaser()", 5);
   }
 }
 
@@ -212,11 +233,47 @@ function dispararLaser() {
     if (laserY >= 70) {
       c.drawImage(laser, impactoLaserX, laserY);
     }
+    shoot.play();
   }
-
   if (laserY < 60) {
     clearInterval(laserMovendo);
     inicioLaser = false;
     laserY = 500;
+  }
+}
+
+function updateLocalStorage() {
+  var pessoa = {
+    nome: prompt("Nome: "),
+    pontos: pontos,
+  };
+
+  // resgatando valor do ranking
+  let ranking = localStorage.getItem("ranking");
+
+  if (ranking) {
+    // ransformar em objeto javascript
+    let arrayRanking = JSON.parse(ranking);
+    arrayRanking.push(pessoa);
+    bubbleSort(arrayRanking);
+    console.log(arrayRanking);
+    localStorage.setItem("ranking", JSON.stringify(arrayRanking));
+  } else {
+    let arr = [pessoa];
+    localStorage.setItem("ranking", JSON.stringify(arr));
+  }
+}
+
+function bubbleSort(v) {
+  var aux;
+
+  for (var i = 0; i < v.length - 1; i++) {
+    for (var j = 0; j < v.length - 1 - i; j++) {
+      if (v[j].pontos < v[j + 1].pontos) {
+        aux = v[j];
+        v[j] = v[j + 1];
+        v[j + 1] = aux;
+      }
+    }
   }
 }
