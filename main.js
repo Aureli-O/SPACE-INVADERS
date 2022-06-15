@@ -4,8 +4,9 @@ var c;
 var canhao;
 var laser;
 var alien;
+var alienSuperior;
 var barreira;
-var pontos=0;
+var pontos = 0;
 
 var canhaoX = 180;
 var canhaoY = 529;
@@ -21,7 +22,10 @@ var posicao = 0;
 
 var alienLinhas = [10, 40, 70, 100, 130, 160, 190, 220, 250, 280, 310];
 var alienColunas = [55, 85, 115, 145, 175];
+var alienSuperiorColunas = [5];
+var alienSuperiorLinhas = [20, 200, 360];
 var aliensRestantes = [];
+var superioresRestantes = [];
 
 const C_ALTURA = 700;
 const C_LARGURA = 500;
@@ -31,9 +35,9 @@ const TECLA_DIREITA = 39;
 const TECLA_ACIMA = 38;
 
 //sons
-const shoot = new Audio(`Sounds/shoot.mp3`)
-const backmusic = new Audio(`Sounds/backmusic.mp3`)
-const alienexplosion = new Audio(`Sounds/alienexplosion.mp3`)
+const shoot = new Audio(`Sounds/shoot.mp3`);
+const backmusic = new Audio(`Sounds/backmusic.mp3`);
+const alienexplosion = new Audio(`Sounds/alienexplosion.mp3`);
 
 onkeydown = moverCanhao; // Define função chamada ao se pressionar uma tecla
 
@@ -48,23 +52,24 @@ function iniciar() {
   c.fillRect(0, 0, C_LARGURA, C_ALTURA);
 
   carregarImagens();
-  posicionarAlien();
+  posicionarAlien(alienLinhas, alienColunas);
+  posicionarAlien(alienSuperiorLinhas, alienSuperiorColunas);
   posicionarBarreiras();
 
   backmusic.play();
-  backmusic.loop =true;
-  backmusic.volume = 0.2
+  backmusic.loop = true;
+  backmusic.volume = 0.2;
 
   setInterval("moverAliens()", intervalo);
   setInterval("alienAtingido()", 6);
 }
 
-function posicionarAlien() {
-  for (var i = 0; i < alienLinhas.length; i++) {
-    for (var j = 0; j < alienColunas.length; j++) {
-      var novoAlien = {
-        posX: alienLinhas[i],
-        posY: alienColunas[j],
+function posicionarAlien(linhas, colunas) {
+  for (let i = 0; i < linhas.length; i++) {
+    for (let j = 0; j < colunas.length; j++) {
+      let novoAlien = {
+        posX: linhas[i],
+        posY: colunas[j],
         foiAtingido: false,
       };
       aliensRestantes[aliensRestantes.length] = novoAlien;
@@ -84,6 +89,9 @@ function carregarImagens() {
 
   alien = new Image();
   alien.src = "sprites/alien.png";
+
+  alienSuperior = new Image();
+  alienSuperior.src = "sprites/alien2.png";
 
   barreira = new Image();
   barreira.src = "sprites/barreira.png";
@@ -169,7 +177,7 @@ function alienAtingido() {
           pontos += 40;
         }
 
-        alienexplosion.play()
+        alienexplosion.play();
       }
     }
   }
